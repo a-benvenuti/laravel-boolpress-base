@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\Http\Controllers\Controller;
 
 class PostController extends Controller
 {
@@ -18,6 +19,9 @@ class PostController extends Controller
         dd($posts);
     }
 
+
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -25,7 +29,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.posts.create');
     }
 
     /**
@@ -39,6 +43,9 @@ class PostController extends Controller
         //
     }
 
+
+
+
     /**
      * Display the specified resource.
      *
@@ -49,6 +56,9 @@ class PostController extends Controller
     {
         dd($post->comments);
     }
+
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -72,6 +82,9 @@ class PostController extends Controller
     {
         //
     }
+
+
+
 
     /**
      * Remove the specified resource from storage.

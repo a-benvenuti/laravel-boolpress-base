@@ -10,7 +10,9 @@
     </head>
     <body>
         <main>
-            @yield('main')
+            <div class="container mt-5">
+                @yield('main')
+            </div>
         </main>                
     </body>
 </html>
