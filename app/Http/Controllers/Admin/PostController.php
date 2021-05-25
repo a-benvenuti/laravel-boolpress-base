@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Post;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -40,7 +41,29 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validation
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'date' => 'required|date',
+            'content' => 'required|string',
+            'image' => 'nullable|url'
+        ]);
+
+        $data = $request->all();
+
+        // controllo checkbox
+        if (!isset($data['published'])) {
+            $data['published'] = false;
+        } else {
+            $data['published'] = true;
+        }
+        // eccezione slug (imposto lo slug partendo dal title)
+        $data['slug'] = Str::slug($data['title'], '-');
+
+        Post::create($data);
+
+        // redirect
+        return redirect()->route('admin.posts.index');
     }
 
 
