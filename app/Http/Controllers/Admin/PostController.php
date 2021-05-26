@@ -4,11 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Post;
+// use App\Tag;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+
+    // VALIDAZIONE
+    protected $validation = [
+        'date' => 'required|date',
+        'content' => 'required|string',
+        'image' => 'nullable|url'
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +26,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-        dd($posts);
+        return view('admin.posts.index', compact('posts'));
     }
 
 
@@ -41,25 +50,20 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $validation = $this->validation;
+        $validation['title'] = 'required|string|max:255|unique:posts';
+
         // validation
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'date' => 'required|date',
-            'content' => 'required|string',
-            'image' => 'nullable|url'
-        ]);
+        $request->validate($this->validation);
 
         $data = $request->all();
 
         // controllo checkbox
-        if (!isset($data['published'])) {
-            $data['published'] = false;
-        } else {
-            $data['published'] = true;
-        }
+        $data['published'] = !isset($data['published']) ? 0 : 1;
         // eccezione slug (imposto lo slug partendo dal title)
         $data['slug'] = Str::slug($data['title'], '-');
-
+        
+        // insert
         Post::create($data);
 
         // redirect
@@ -77,7 +81,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        dd($post->comments);
+        return view('admin.posts.show', compact('post'));
     }
 
 
@@ -89,9 +93,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        return view('admin.posts.edit', compact('post'));
     }
 
     /**
@@ -101,9 +105,29 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $validation = $this->validation;
+        $validation['title'] = 'required|string|max:255|unique:posts,title,' . $post->id;
+
+        // validation
+        $request->validate($validation);
+
+        $data = $request->all();
+
+        // controllo checkbox
+        $data['published'] = !isset($data['published']) ? 0 : 1;
+        // imposto lo slug partendo dal title
+        $data['slug'] = Str::slug($data['title'], '-');
+
+        // Update
+        $post->update($data);
+
+        // aggiorno i tags
+        // $post->tags()->sync($data['tags']);
+
+        // return
+        return redirect()->route('admin.posts.show', $post);
     }
 
 
@@ -115,8 +139,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect()->route('admin.posts.index')->with('message', 'Il post è stato eliminato!');
     }
 }
