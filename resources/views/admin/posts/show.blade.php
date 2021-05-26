@@ -9,7 +9,12 @@
 <h1>{{$post->title}}</h1>
 <p><strong>data:</strong> {{$post->date}}</p>
 <p><strong>stato:</strong> {{$post->published ? 'pubblicato' : 'non pubblicato'}}</p>
-
+<div>
+	<strong>Tags:</strong>
+	@foreach ($post->tags as $tag)
+	<span class="badge badge-info">{{$tag->name}}</span>
+	@endforeach
+</div>
 <hr>
 <p>{{$post->content}}</p>
 

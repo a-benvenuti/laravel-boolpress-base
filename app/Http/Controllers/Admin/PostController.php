@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Post;
-// use App\Tag;
+use App\Tag;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 
@@ -18,6 +18,7 @@ class PostController extends Controller
         'image' => 'nullable|url'
     ];
 
+    //----------------------------------------------------------------------
     /**
      * Display a listing of the resource.
      *
@@ -28,10 +29,12 @@ class PostController extends Controller
         $posts = Post::all();
         return view('admin.posts.index', compact('posts'));
     }
+    //----------------------------------------------------------------------
 
 
 
 
+    //----------------------------------------------------------------------
     /**
      * Show the form for creating a new resource.
      *
@@ -39,7 +42,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $tags = Tag::all();
+        return view('admin.posts.create', compact('tags'));
     }
 
     /**
@@ -64,15 +68,20 @@ class PostController extends Controller
         $data['slug'] = Str::slug($data['title'], '-');
         
         // insert
-        Post::create($data);
+        $newPost = Post::create($data);
+
+        // aggiungo i tags
+        $newPost->tags()->attach($data['tags']);
 
         // redirect
         return redirect()->route('admin.posts.index');
     }
+    //----------------------------------------------------------------------
 
 
 
 
+    //----------------------------------------------------------------------
     /**
      * Display the specified resource.
      *
@@ -83,10 +92,12 @@ class PostController extends Controller
     {
         return view('admin.posts.show', compact('post'));
     }
+    //----------------------------------------------------------------------
 
 
 
 
+    //----------------------------------------------------------------------
     /**
      * Show the form for editing the specified resource.
      *
@@ -95,7 +106,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('admin.posts.edit', compact('post'));
+        $tags = Tag::all();
+        return view('admin.posts.edit', compact('post', 'tags'));
     }
 
     /**
@@ -124,15 +136,17 @@ class PostController extends Controller
         $post->update($data);
 
         // aggiorno i tags
-        // $post->tags()->sync($data['tags']);
+        $post->tags()->sync($data['tags']);
 
         // return
         return redirect()->route('admin.posts.show', $post);
     }
+    //----------------------------------------------------------------------
 
 
 
 
+    //----------------------------------------------------------------------
     /**
      * Remove the specified resource from storage.
      *
@@ -141,6 +155,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        // elimini i tag
+        $post->tags()->detach();
+        
         $post->delete();
         return redirect()->route('admin.posts.index')->with('message', 'Il post è stato eliminato!');
     }
