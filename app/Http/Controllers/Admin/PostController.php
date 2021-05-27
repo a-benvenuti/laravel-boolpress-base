@@ -58,7 +58,7 @@ class PostController extends Controller
         $validation['title'] = 'required|string|max:255|unique:posts';
 
         // validation
-        $request->validate($this->validation);
+        $request->validate($validation);
 
         $data = $request->all();
 
@@ -70,8 +70,11 @@ class PostController extends Controller
         // insert
         $newPost = Post::create($data);
 
-        // aggiungo i tags
-        $newPost->tags()->attach($data['tags']);
+        // aggiungo i tags e controllo se ho effettivamente il $data['tags]
+        if( isset($data['tags']) ){
+            $newPost->tags()->attach($data['tags']);
+        }
+        
 
         // redirect
         return redirect()->route('admin.posts.index');
@@ -135,7 +138,10 @@ class PostController extends Controller
         // Update
         $post->update($data);
 
-        // aggiorno i tags
+        // aggiorno i tags e controllo se ho effettivamente il $data['tags] -> se non esiste gli passo l'array vuoto
+        if ( !isset($data['tags']) ){
+            $data['tags'] = [];
+        }
         $post->tags()->sync($data['tags']);
 
         // return
