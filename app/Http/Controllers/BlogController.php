@@ -11,14 +11,21 @@ class BlogController extends Controller
 {
     public function index()
     {
+        // prendo tutti i tag
+        $tags = Tag::all();
+
         // prendo i dati dal db (5 post di quelli pubblicati ordinati dal più datati)
         $posts = Post::where('published', 1)->orderBy('date', 'asc')->limit(5)->get();
+
         // restituisco la pagina home
-        return view('guest.index', compact('posts'));
+        return view('guest.index', compact('posts', 'tags'));
     }
 
     public function show($slug)
     {
+        // prendo tutti i tag
+        $tags = Tag::all();
+
         // prendo i dati dal db
         $post = Post::where('slug', $slug)->first();
 
@@ -27,9 +34,8 @@ class BlogController extends Controller
             abort(404);
         }
         // restituisco la pagina del post
-        return view('guest.show', compact('post'));
+        return view('guest.show', compact('post', 'tags'));
     }
-
 
     public function addComment(Request $request, Post $post)
     {
@@ -47,6 +53,26 @@ class BlogController extends Controller
         $newComment->save();
 
         return back();
+    }
+
+    public function filterTag($slug)
+    {
+        // prendo tutti i tag
+        $tags = Tag::all();
+
+        // prendo i dati dal db
+        $tag = Tag::where('slug', $slug)->first();
+
+        // se lo slug non è presente pagina 404
+        if ($tag == null) {
+            abort(404);
+        }
+
+        // prendo tutti i post con quel tag tra i post pubblicati
+        $posts = $tag->posts()->where('published', 1)->get();
+
+        // restituisco la pagina home
+        return view('guest.index', compact('posts', 'tags'));
     }
 
 }
