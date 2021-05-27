@@ -25,6 +25,7 @@ Home
 		<tr>
 			<th>Immagine</th>
 			<th scope="col">Titolo</th>
+			<th scope="col">N° Commenti</th>
 			<th scope="col">Data</th>
 			<th scope="col">Pubblicato</th>
 			<th scope="col">Azioni</th>
@@ -35,6 +36,7 @@ Home
 		<tr>
 			<td><img src="{{$post->image ? $post->image : 'https://via.placeholder.com/200'}}" alt="{{$post->title}}" style="width: 100px"></td>
 			<td>{{$post->title}}</td>
+			<td>{{count($post->comments)}}</td>
 			<td>{{$post->date}}</td>
 			<td>{{$post->published ? 'Si' : 'No'}}</td>
 			<td class="speciale">
