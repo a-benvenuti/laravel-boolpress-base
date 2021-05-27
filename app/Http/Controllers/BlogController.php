@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\Comment;
+use App\Tag;
 
 class BlogController extends Controller
 {
@@ -27,4 +29,24 @@ class BlogController extends Controller
         // restituisco la pagina del post
         return view('guest.show', compact('post'));
     }
+
+
+    public function addComment(Request $request, Post $post)
+    {
+        // validazione
+        $request->validate([
+            'name' => 'nullable|string|max:100',
+            'content' => 'required|string',
+        ]);
+
+        $newComment = new Comment();
+        $newComment->name = $request->name;
+        $newComment->content = $request->content;
+        $newComment->post_id = $post->id;
+
+        $newComment->save();
+
+        return back();
+    }
+
 }

@@ -16,12 +16,30 @@
 		<ul>
 			@foreach ($post->comments as $comment)
 				<li>
-					<h5>{{$comment->name}}</h5>
+					<h5>{{$comment->name ? $comment->name : 'Anonimo'}}</h5>
 					<p>{{$comment->content}}</p>
 				</li>
 			@endforeach
 		</ul>
 	</div>
 	@endif
+	<div class="form-create mb-3">
+		<h3>Aggiungi Commento</h3>
+		<form action="{{route('guest.posts.add-comment', ['post' => $post->id])}}" method="post">
+			@csrf
+			@method('POST')
+			<div class="form-group">
+				<label for="title">Nome</label>
+				<input type="text" class="form-control" id="name" name="name" placeholder="Nome">
+			</div>
+			<div class="form-group">
+				<label for="content">Commento</label>
+				<textarea class="form-control"  name="content" id="content" cols="30" rows="4" placeholder="Commento"></textarea>
+			</div>
+			<div class="mt-3">
+				<button type="submit" class="btn btn-primary">Inserisci</button>
+			</div>
+		</form>
+	</div>
 </div>
 @endsection
