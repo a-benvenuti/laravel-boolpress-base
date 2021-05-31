@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Post;
 use App\Comment;
 use App\Tag;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CommentMail;
 
 class BlogController extends Controller
 {
@@ -51,6 +53,9 @@ class BlogController extends Controller
         $newComment->post_id = $post->id;
 
         $newComment->save();
+
+        // invio l'email di notifica
+        Mail::to('mail@mail.it')->send(new CommentMail($post));
 
         return back();
     }

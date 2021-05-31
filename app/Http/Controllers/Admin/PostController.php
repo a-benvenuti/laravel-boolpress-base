@@ -7,6 +7,7 @@ use App\Post;
 use App\Tag;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -15,7 +16,7 @@ class PostController extends Controller
     protected $validation = [
         'date' => 'required|date',
         'content' => 'required|string',
-        'image' => 'nullable|url'
+        'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048'
     ];
 
     //----------------------------------------------------------------------
@@ -66,6 +67,11 @@ class PostController extends Controller
         $data['published'] = !isset($data['published']) ? 0 : 1;
         // eccezione slug (imposto lo slug partendo dal title)
         $data['slug'] = Str::slug($data['title'], '-');
+
+        // upload file image
+        if (isset($data['image'])) {
+            $data['image'] = Storage::disk('public')->put('images', $data['image']);
+        }
         
         // insert
         $newPost = Post::create($data);
@@ -124,7 +130,7 @@ class PostController extends Controller
     {
         $validation = $this->validation;
         $validation['title'] = 'required|string|max:255|unique:posts,title,' . $post->id;
-
+        
         // validation
         $request->validate($validation);
 
@@ -134,6 +140,13 @@ class PostController extends Controller
         $data['published'] = !isset($data['published']) ? 0 : 1;
         // imposto lo slug partendo dal title
         $data['slug'] = Str::slug($data['title'], '-');
+
+        // upload file image
+        if (isset($data['image'])) {
+            $data['image'] = Storage::disk('public')->put('images', $data['image']);
+            $post->image = $data['image'];
+            $post->save();
+        }
 
         // Update
         $post->update($data);

@@ -16,7 +16,7 @@ Crea nuovo post
     </div>
 @endif
 
-<form action="{{route('admin.posts.store')}}" method="POST">
+<form action="{{route('admin.posts.store')}}" method="POST" enctype="multipart/form-data">
 	@csrf
 	@method('POST')
 	<div class="form-group">
@@ -33,7 +33,8 @@ Crea nuovo post
 	</div>
 	<div class="form-group">
 		<label for="image">Immagine</label>
-		<input type="text" class="form-control" id="image" name="image" placeholder="Image">
+		{{-- <input type="text" class="form-control" id="image" name="image" placeholder="Image"> --}}
+		<input type="file" id="image" name="image">
 	</div>
 	<div class="form-check form-check-inline">
 		<input class="form-check-input" type="checkbox" id="published" name="published">
